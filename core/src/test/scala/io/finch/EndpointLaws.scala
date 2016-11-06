@@ -2,17 +2,16 @@ package io.finch
 
 import cats.Eq
 import cats.laws.IsEq
-import cats.instances.AllInstances
 import cats.laws._
 import cats.laws.discipline._
-import org.scalacheck.{Prop, Arbitrary}
+import cats.instances.AllInstances
 import org.typelevel.discipline.Laws
-
+import org.scalacheck.{Prop, Arbitrary}
 import scala.reflect.ClassTag
 
 trait EndpointLaws[A] extends Laws with MissingInstances with AllInstances {
 
-  def decoder: Decode[A]
+  def decoder: DecodeEntity[A]
   def classTag: ClassTag[A]
   def endpoint: Endpoint[Option[String]]
   def serialize: String => Input
@@ -33,10 +32,10 @@ trait EndpointLaws[A] extends Laws with MissingInstances with AllInstances {
 }
 
 object EndpointLaws {
-  def apply[A: Decode: ClassTag](
+  def apply[A: DecodeEntity: ClassTag](
     e: Endpoint[Option[String]]
   )(f: String => Input): EndpointLaws[A] = new EndpointLaws[A] {
-    val decoder: Decode[A] = Decode[A]
+    val decoder: DecodeEntity[A] = DecodeEntity[A]
     val classTag: ClassTag[A] = implicitly[ClassTag[A]]
     val endpoint: Endpoint[Option[String]] = e
     val serialize: String => Input = f
